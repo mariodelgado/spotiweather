@@ -10,10 +10,30 @@
 #import <Spotify/Spotify.h>
 #import "Config.h"
 #import "ViewController.h"
+#import <CoreLocation/CoreLocation.h>
+#import "OWMWeatherAPI.h"
+#import "KFOpenWeatherMapAPIClient.h"
+#import "KFOWMWeatherResponseModel.h"
+#import "KFOWMMainWeatherModel.h"
+#import "KFOWMWeatherModel.h"
+#import "KFOWMForecastResponseModel.h"
+#import "KFOWMCityModel.h"
+#import "KFOWMDailyForecastResponseModel.h"
+#import "KFOWMDailyForecastListModel.h"
+#import "KFOWMSearchResponseModel.h"
+#import "KFOWMSystemModel.h"
+CLLocationManager *locationManager;
+CLGeocoder *geocoder;
+int locationFetchCounter;
+
 
 #define kSessionUserDefaultsKey "SpotifySession"
 
 @implementation AppDelegate
+
+
+
+
 
 -(void)enableAudioPlaybackWithSession:(SPTSession *)session {
     NSData *sessionData = [NSKeyedArchiver archivedDataWithRootObject:session];

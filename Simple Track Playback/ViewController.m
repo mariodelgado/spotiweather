@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Your Company. All rights reserved.
 //
 
+#import "AppDelegate.h"
 #import "Config.h"
 #import "ViewController.h"
 #import <CoreLocation/CoreLocation.h>
@@ -20,6 +21,9 @@
 #import "KFOWMDailyForecastListModel.h"
 #import "KFOWMSearchResponseModel.h"
 #import "KFOWMSystemModel.h"
+#import <Spotify/Spotify.h>
+
+
 CLLocationManager *locationManager;
 CLGeocoder *geocoder;
 int locationFetchCounter;
@@ -30,13 +34,17 @@ int locationFetchCounter;
 @property (weak, nonatomic) IBOutlet UILabel *artistLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *coverView;
 @property (weak, nonatomic) IBOutlet UIImageView *coverViewBG;
+@property (weak, nonatomic) IBOutlet UIButton *playPause;
 
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *spinner;
 @property (weak, nonatomic) IBOutlet UILabel *weatherCond;
 @property (weak, nonatomic) IBOutlet UILabel *Location;
+@property (weak, nonatomic) IBOutlet UIView *pauseview;
+@property (weak, nonatomic) IBOutlet UIView *coverSuperView;
 
 @property (nonatomic, strong) SPTSession *session;
 @property (nonatomic, strong) SPTAudioStreamingController *player;
+@property (nonatomic, weak) NSString *condi;
 
 
 @property (nonatomic, readwrite) CLLocationCoordinate2D mycord;
@@ -48,6 +56,13 @@ int locationFetchCounter;
 
 
 
+@property (assign, nonatomic) CGPoint offset;
+    @property CGPoint translation;
+@property CGFloat lastScale;
+@property CGFloat lastRotation;
+@property CGSize size1;
+
+@property (weak,nonatomic) IBOutlet NSLayoutConstraint *coverYConstraint;
 
 @end
 
@@ -55,8 +70,9 @@ int locationFetchCounter;
 
 -(void)viewDidLoad {
     [super viewDidLoad];
-    
+
     locationManager = [[CLLocationManager alloc] init];
+    [locationManager requestWhenInUseAuthorization];
     locationManager.delegate = self;
     locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     geocoder = [[CLGeocoder alloc] init];
@@ -66,6 +82,17 @@ int locationFetchCounter;
     
     // fetching current location start from here
     [locationManager startUpdatingLocation];
+    
+    
+    self.pauseview.bounds = self.coverView.bounds;
+    
+    UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(onCustomPan:)];
+    
+
+    [self.coverSuperView addGestureRecognizer:panGestureRecognizer];
+    
+
+    
     
     
 //    [weatherAPI setLangWithPreferedLanguage];
@@ -101,9 +128,80 @@ int locationFetchCounter;
 //    
 //    
 //    
-    
+    [self setNeedsStatusBarAppearanceUpdate];
 
 }
+
+
+-(UIStatusBarStyle)preferredStatusBarStyle{
+    return UIStatusBarStyleLightContent;
+}
+
+
+
+
+- (void)onCustomPan:(UIPanGestureRecognizer *)panGestureRecognizer {
+    CGPoint point = [panGestureRecognizer locationInView:self.coverSuperView];
+    CGPoint velocity = [panGestureRecognizer velocityInView:self.coverSuperView];
+    CGPoint point1 = [panGestureRecognizer locationInView:self.coverSuperView];
+    CGPoint translation = [panGestureRecognizer translationInView:self.coverSuperView];
+    
+    if (panGestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        NSLog(@"Gesture began at: %@", NSStringFromCGPoint(point));
+    } else if (panGestureRecognizer.state == UIGestureRecognizerStateChanged) {
+        if (translation.y >0) {
+            self.coverYConstraint.constant = 10;
+        }else{
+        self.coverYConstraint.constant -= (translation.y)/8;
+
+        }
+        NSLog(@"Gesture changed: %@", NSStringFromCGPoint(point));
+    } else if (panGestureRecognizer.state == UIGestureRecognizerStateEnded) {
+        
+        if (self.coverYConstraint.constant > 100)
+        {
+            self.coverYConstraint.constant = 350;
+            [self fastForward:nil];
+
+            [UIView animateWithDuration:0.2 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+                [self.view layoutIfNeeded];
+                self.coverSuperView.layer.opacity = 0;
+                
+            } completion:^(BOOL finished) {
+                [self resetcover];
+            }];
+
+        } else{
+            self.coverYConstraint.constant = 10;
+            [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+                [self.view layoutIfNeeded];
+                
+                
+            } completion:^(BOOL finished) {
+                
+            }];
+        }
+        
+
+        
+        NSLog(@"Gesture ended: %@", NSStringFromCGPoint(point));
+    }
+}
+
+-(void)resetcover{
+    self.coverYConstraint.constant = 10;
+    [self.view layoutIfNeeded];
+
+    [UIView animateWithDuration:0.4 delay:.7 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        self.coverSuperView.layer.opacity = 1;
+        
+    } completion:^(BOOL finished) {
+        
+    }];
+}
+
+
+
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
     // this delegate method is constantly invoked every some miliseconds.
@@ -141,20 +239,67 @@ int locationFetchCounter;
                  
 
                  
-                 self.weatherCond.text = [NSString stringWithFormat:@"%@", [responseModel valueForKeyPath:@"weather.main"][0]];
+
+                 
+                 NSString *loc2 = [NSString stringWithFormat:@"%@", [responseModel valueForKeyPath:@"weather.main"][0]];
+                 NSString *upper2 = [loc2 uppercaseString];
+                 
+                self.weatherCond.text= upper2;
                  
                  
+                 NSString *loc1 = [NSString stringWithFormat:@"%@", responseModel.cityName];
+                 NSString *upper1 = [loc1 uppercaseString];
+                 self.Location.text = upper1;
+                 NSLog(@"It's %@", upper1);
+
                  
-                 self.Location.text = [NSString stringWithFormat:@"%@", responseModel.cityName];
-                 
+                 if ([self.weatherCond.text isEqualToString:@"CLOUDS"]) {
+                     NSLog(@"It's Cloudy");
+                     
+                     
+                     [SPTRequest requestItemAtURI:[NSURL URLWithString:@"spotify:user:1276694298:playlist:7kKvk0X4SRYBP5J87tfXG4"]
+                                      withSession:self.session
+                                         callback:^(NSError *error, id object) {
+                                             
+                                             if (error != nil) {
+                                                 NSLog(@"*** Album lookup got error %@", error);
+                                                 return;
+                                             }
+                                             
+                                             [self.player playTrackProvider:(id <SPTTrackProvider>)object callback:nil];
+                                             self.player.shuffle = YES;
+                                             self.player.repeat = YES;
+                                             
+                                         }];
+
+                    
+                 }else{
+                     NSLog(@"It's Nice out");
+
+                     [SPTRequest requestItemAtURI:[NSURL URLWithString:@"spotify:user:spotify:playlist:0i0KOEPUK7pA1A5A29ulk4"]
+                                      withSession:self.session
+                                         callback:^(NSError *error, id object) {
+                                             
+                                             if (error != nil) {
+                                                 NSLog(@"*** Album lookup got error %@", error);
+                                                 return;
+                                             }
+                                             
+                                             [self.player playTrackProvider:(id <SPTTrackProvider>)object callback:nil];
+                                             self.player.shuffle = YES;
+                                             self.player.repeat = YES;
+                                             
+                                         }];
 
 
                  
-                 
+                 }
              }
              else
              {
                  NSLog(@"could not get weather: %@", error);
+                 
+
              }
          }];
 
@@ -163,6 +308,18 @@ int locationFetchCounter;
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
     NSLog(@"failed to fetch current location : %@", error);
+    [SPTRequest requestItemAtURI:[NSURL URLWithString:@"spotify:user:spotify_france:playlist:3fo3sq7WExOXk1St5ajqya"]
+                     withSession:self.session
+                        callback:^(NSError *error, id object) {
+                            
+                            if (error != nil) {
+                                NSLog(@"*** Album lookup got error %@", error);
+                                return;
+                            }
+                            
+                            [self.player playTrackProvider:(id <SPTTrackProvider>)object callback:nil];
+                            
+                        }];
 }
 
 
@@ -170,14 +327,114 @@ int locationFetchCounter;
 
 -(IBAction)rewind:(id)sender {
     [self.player skipPrevious:nil];
+    if (self.playPause.selected == YES) {
+        self.playPause.selected = !self.playPause.selected;
+        
+        [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            self.pauseview.layer.opacity = 0;
+            
+        } completion:^(BOOL finished) {
+            nil;
+        }];
+        
+    }else{
+        nil;
+        
+        
+    }
+    
+}
+- (IBAction)pauseout:(id)sender {
+    [UIView animateWithDuration:0.6 delay:0 options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionBeginFromCurrentState animations:^{
+        self.pauseview.layer.opacity = 0;
+        
+    } completion:^(BOOL finished) {
+        nil;
+    }];
+
+}
+- (IBAction)pausedown:(id)sender {
+    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        self.pauseview.layer.opacity = 0.1;
+        
+    } completion:^(BOOL finished) {
+        nil;
+    }];
+
 }
 
 -(IBAction)playPause:(id)sender {
+    [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionCurveEaseInOut  animations:^{
+        self.pauseview.layer.opacity = 0;
+        
+    } completion:^(BOOL finished) {
+        nil;
+    }];
+
+    
+    self.playPause.selected = !self.playPause.selected;
     [self.player setIsPlaying:!self.player.isPlaying callback:nil];
+    
+    if (self.playPause.selected == YES) {
+        [UIView animateWithDuration:1.5
+                              delay:0 options:UIViewKeyframeAnimationOptionAutoreverse | UIViewKeyframeAnimationOptionRepeat |UIViewAnimationOptionCurveEaseInOut animations:^{
+            self.pauseview.layer.opacity = 0.4;
+            
+        } completion:^(BOOL finished) {
+            nil;
+        }];
+    }else{
+        [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            self.pauseview.layer.opacity = 0;
+            
+        } completion:^(BOOL finished) {
+            nil;
+        }];
+
+        
+    }
 }
 
 -(IBAction)fastForward:(id)sender {
-    [self.player skipNext:nil];
+
+
+    
+    [UIView animateWithDuration:0.5 delay:0 options: UIViewAnimationOptionCurveEaseOut animations:^{
+        self.coverViewBG.layer.opacity = 0;
+        self.pauseview.layer.opacity = 0;
+
+    } completion:^(BOOL finished) {
+        [self.player skipNext:nil];
+
+        [UIView animateWithDuration:0.4 delay:0.1 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            self.coverViewBG.layer.opacity = 1;
+            
+        } completion:^(BOOL finished) {
+            nil;
+        }];
+        
+
+    }];
+    
+    if (self.playPause.selected == YES) {
+        self.playPause.selected = !self.playPause.selected;
+
+        [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            self.pauseview.layer.opacity = 0;
+            
+        } completion:^(BOOL finished) {
+            nil;
+        }];
+        
+        
+
+    }else{
+        nil;
+        
+        
+    }
+    
+
 }
 
 #pragma mark - Logic
@@ -191,9 +448,20 @@ int locationFetchCounter;
         self.albumLabel.text = @"";
         self.artistLabel.text = @"";
     } else {
-        self.titleLabel.text = [self.player.currentTrackMetadata valueForKey:SPTAudioStreamingMetadataTrackName];
+
+        NSString *strDay = [self.player.currentTrackMetadata valueForKey:SPTAudioStreamingMetadataTrackName];
+        NSString *uppercaseString = [strDay uppercaseString];
+        self.titleLabel.text =
+        uppercaseString;
+
+        
+        NSString *strDay1 = [self.player.currentTrackMetadata valueForKey:SPTAudioStreamingMetadataArtistName];
+        NSString *uppercaseString1 = [strDay1 uppercaseString];
+        self.artistLabel.text =
+        uppercaseString1;
+
         self.albumLabel.text = [self.player.currentTrackMetadata valueForKey:SPTAudioStreamingMetadataAlbumName];
-        self.artistLabel.text = [self.player.currentTrackMetadata valueForKey:SPTAudioStreamingMetadataArtistName];
+       // self.artistLabel.text = [self.player.currentTrackMetadata valueForKey:SPTAudioStreamingMetadataArtistName];
     }
     [self updateCoverArt];
 }
@@ -234,8 +502,15 @@ int locationFetchCounter;
             // …and back to the main queue to display the image.
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.spinner stopAnimating];
-                 self.coverViewBG.image = image;
+                
+                [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionTransitionCrossDissolve animations:^{
+                    
+                    self.coverViewBG.image = image;
                     self.coverView.image = image;
+                } completion:^(BOOL finished) {
+                    nil;
+                }];
+
                
                 
   
@@ -253,7 +528,7 @@ int locationFetchCounter;
 
 
 -(void)blurimage{
-    UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+    UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
     UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
     blurEffectView.layer.opacity = 1;
     
@@ -277,6 +552,8 @@ int locationFetchCounter;
         self.player = [[SPTAudioStreamingController alloc] initWithClientId:@kClientId];
         self.player.playbackDelegate = self;
     }
+    
+
 
     [self.player loginWithSession:session callback:^(NSError *error) {
 
@@ -285,19 +562,20 @@ int locationFetchCounter;
 			return;
 		}
 
-		[SPTRequest requestItemAtURI:[NSURL URLWithString:@"spotify:user:ztpruitt:playlist:0ymZzMHLIapX8dowGmI7ez"]
+
+        [SPTRequest requestItemAtURI:[NSURL URLWithString:@""]
                          withSession:session
                             callback:^(NSError *error, id object) {
-
-            if (error != nil) {
-                NSLog(@"*** Album lookup got error %@", error);
-                return;
-            }
-
-            [self.player playTrackProvider:(id <SPTTrackProvider>)object callback:nil];
-
-        }];
-	}];
+                                
+                                if (error != nil) {
+                                    NSLog(@"*** Album lookup got error %@", error);
+                                    return;
+                                }
+                                
+                                [self.player playTrackProvider:(id <SPTTrackProvider>)object callback:nil];
+                                
+                            }];
+		}];
 }
 
 #pragma mark - Track Player Delegates
