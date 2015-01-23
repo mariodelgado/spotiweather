@@ -141,41 +141,59 @@ int locationFetchCounter;
 
 
 - (void)onCustomPan:(UIPanGestureRecognizer *)panGestureRecognizer {
-    CGPoint point = [panGestureRecognizer locationInView:self.coverSuperView];
+    CGPoint point = [panGestureRecognizer locationInView:self.coverViewBG];
     CGPoint velocity = [panGestureRecognizer velocityInView:self.coverSuperView];
     CGPoint point1 = [panGestureRecognizer locationInView:self.coverSuperView];
     CGPoint translation = [panGestureRecognizer translationInView:self.coverSuperView];
+    CGFloat yvalue = self.coverYConstraint.constant;
     
     if (panGestureRecognizer.state == UIGestureRecognizerStateBegan) {
         NSLog(@"Gesture began at: %@", NSStringFromCGPoint(point));
-    } else if (panGestureRecognizer.state == UIGestureRecognizerStateChanged) {
-        if (translation.y >0) {
-            self.coverYConstraint.constant = 10;
-        }else{
-        self.coverYConstraint.constant -= (translation.y)/8;
 
+    } else if (panGestureRecognizer.state == UIGestureRecognizerStateChanged) {
+        
+ 
+        
+        
+        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        self.coverYConstraint.constant = self.coverViewBG.frame.origin.y-translation.y;
+            
+        } completion:^(BOOL finished) {
+    }];
+
+        NSLog(@"y value: %f", yvalue);
+        
+        if (self.coverYConstraint.constant < 10) {
+            self.coverYConstraint.constant -= self.coverYConstraint.constant-(self.coverYConstraint.constant/20);
         }
+
+        
         NSLog(@"Gesture changed: %@", NSStringFromCGPoint(point));
-    } else if (panGestureRecognizer.state == UIGestureRecognizerStateEnded) {
+    }
+
+else if (panGestureRecognizer.state == UIGestureRecognizerStateEnded) {
         
         if (self.coverYConstraint.constant > 100)
         {
-            self.coverYConstraint.constant = 350;
-            [self fastForward:nil];
+            self.coverYConstraint.constant = self.coverViewBG.frame.size.height/1.5;
 
             [UIView animateWithDuration:0.2 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
                 [self.view layoutIfNeeded];
                 self.coverSuperView.layer.opacity = 0;
-                
+                self.coverSuperView.transform = CGAffineTransformMakeScale(1.25, 1.25);
             } completion:^(BOOL finished) {
                 [self resetcover];
+                [self fastForward:nil];
+
+
             }];
 
         } else{
             self.coverYConstraint.constant = 10;
             [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
                 [self.view layoutIfNeeded];
-                
+                self.pauseview.layer.opacity = 0;
+
                 
             } completion:^(BOOL finished) {
                 
@@ -191,7 +209,7 @@ int locationFetchCounter;
 -(void)resetcover{
     self.coverYConstraint.constant = 10;
     [self.view layoutIfNeeded];
-
+self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
     [UIView animateWithDuration:0.4 delay:.7 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.coverSuperView.layer.opacity = 1;
         
@@ -376,9 +394,9 @@ int locationFetchCounter;
     [self.player setIsPlaying:!self.player.isPlaying callback:nil];
     
     if (self.playPause.selected == YES) {
-        [UIView animateWithDuration:1.5
+        [UIView animateWithDuration:3.0
                               delay:0 options:UIViewKeyframeAnimationOptionAutoreverse | UIViewKeyframeAnimationOptionRepeat |UIViewAnimationOptionCurveEaseInOut animations:^{
-            self.pauseview.layer.opacity = 0.4;
+            self.pauseview.layer.opacity = 0.3;
             
         } completion:^(BOOL finished) {
             nil;

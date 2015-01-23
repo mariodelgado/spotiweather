@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "37E2C9CC18B4DF7D00D5D823"
-               BuildableName = "Simple Track Playback.app"
+               BuildableName = "Moodify.app"
                BlueprintName = "Moodify"
                ReferencedContainer = "container:Moodify.xcodeproj">
             </BuildableReference>
@@ -33,7 +33,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "37E2C9CC18B4DF7D00D5D823"
-            BuildableName = "Simple Track Playback.app"
+            BuildableName = "Moodify.app"
             BlueprintName = "Moodify"
             ReferencedContainer = "container:Moodify.xcodeproj">
          </BuildableReference>
@@ -52,7 +52,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "37E2C9CC18B4DF7D00D5D823"
-            BuildableName = "Simple Track Playback.app"
+            BuildableName = "Moodify.app"
             BlueprintName = "Moodify"
             ReferencedContainer = "container:Moodify.xcodeproj">
          </BuildableReference>
@@ -70,7 +70,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "37E2C9CC18B4DF7D00D5D823"
-            BuildableName = "Simple Track Playback.app"
+            BuildableName = "Moodify.app"
             BlueprintName = "Moodify"
             ReferencedContainer = "container:Moodify.xcodeproj">
          </BuildableReference>
