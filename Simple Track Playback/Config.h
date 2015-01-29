@@ -16,13 +16,13 @@
 #define kClientId "85b185ca13574b9c9471b1156987b336"
 #define kCallbackURL "spotifyiossdkexample://"
 
-#define kTokenSwapServiceURL ""
+#define kTokenSwapServiceURL "https://peaceful-sierra-1249.herokuapp.com/swap"
 // or "http://localhost:1234/swap" with example token swap service
 
 // If you don't provide a token swap service url the login will use implicit grant tokens, which
 // means that your user will need to sign in again every time the token expires.
 
-#define kTokenRefreshServiceURL ""
+#define kTokenRefreshServiceURL "https://peaceful-sierra-1249.herokuapp.com/refresh"
 // or "http://localhost:1234/refresh" with example token refresh service
 
 // If you don't provide a token refresh service url, the user will need to sign in again every
