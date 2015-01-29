@@ -284,9 +284,11 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
                                                  return;
                                              }
                                              
-                                             [self.player playTrackProvider:(id <SPTTrackProvider>)object callback:nil];
-                                             self.player.shuffle = YES;
-                                             self.player.repeat = YES;
+                                             [self.player playTrackProvider:(id <SPTTrackProvider>)object  callback:^(NSError *error) {
+                                                 self.player.shuffle = YES;
+                                                 self.player.repeat = YES;
+                                                 [self.player setIsPlaying:YES callback:nil];
+                                             }];
                                              
                                          }];
 
@@ -303,9 +305,11 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
                                                  return;
                                              }
                                              
-                                             [self.player playTrackProvider:(id <SPTTrackProvider>)object callback:nil];
-                                             self.player.shuffle = YES;
-                                             self.player.repeat = YES;
+                                             [self.player playTrackProvider:(id <SPTTrackProvider>)object  callback:^(NSError *error) {
+                                                 self.player.shuffle = YES;
+                                                 self.player.repeat = YES;
+                                                 [self.player setIsPlaying:YES callback:nil];
+                                             }];
                                              
                                          }];
 
@@ -382,34 +386,44 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
 }
 
 -(IBAction)playPause:(id)sender {
-    [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionCurveEaseInOut  animations:^{
+    if (self.coverView.image == nil) {
+        self.coverView.backgroundColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:.3];
         self.pauseview.layer.opacity = 0;
         
-    } completion:^(BOOL finished) {
-        nil;
-    }];
-
-    
-    self.playPause.selected = !self.playPause.selected;
-    [self.player setIsPlaying:!self.player.isPlaying callback:nil];
-    
-    if (self.playPause.selected == YES) {
-        [UIView animateWithDuration:3.0
-                              delay:0 options:UIViewKeyframeAnimationOptionAutoreverse | UIViewKeyframeAnimationOptionRepeat |UIViewAnimationOptionCurveEaseInOut animations:^{
-            self.pauseview.layer.opacity = 0.3;
-            
-        } completion:^(BOOL finished) {
-            nil;
-        }];
-    }else{
-        [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        [[[UIApplication sharedApplication] delegate] performSelector:@selector(openLoginPage)];
+    }
+    else{
+        [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionCurveEaseInOut  animations:^{
             self.pauseview.layer.opacity = 0;
+            self.coverView.backgroundColor = [UIColor clearColor];
+            
             
         } completion:^(BOOL finished) {
             nil;
         }];
-
         
+        
+        self.playPause.selected = !self.playPause.selected;
+        [self.player setIsPlaying:!self.player.isPlaying callback:nil];
+        
+        if (self.playPause.selected == YES) {
+            [UIView animateWithDuration:3.0
+                                  delay:0 options:UIViewKeyframeAnimationOptionAutoreverse | UIViewKeyframeAnimationOptionRepeat |UIViewAnimationOptionCurveEaseInOut animations:^{
+                                      self.pauseview.layer.opacity = 0.3;
+                                      
+                                  } completion:^(BOOL finished) {
+                                      nil;
+                                  }];
+        }else{
+            [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+                self.pauseview.layer.opacity = 0;
+                
+            } completion:^(BOOL finished) {
+                nil;
+            }];
+            
+            
+        }
     }
 }
 
@@ -571,16 +585,18 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
         self.player.playbackDelegate = self;
     }
     
-
-
+   [self resetLocation:nil];
+    
+    
+    
     [self.player loginWithSession:session callback:^(NSError *error) {
-
-		if (error != nil) {
-			NSLog(@"*** Enabling playback got error: %@", error);
-			return;
-		}
-
-
+        
+        if (error != nil) {
+            NSLog(@"*** Enabling playback got error: %@", error);
+            return;
+        }
+        
+        
         [SPTRequest requestItemAtURI:[NSURL URLWithString:@""]
                          withSession:session
                             callback:^(NSError *error, id object) {
@@ -590,10 +606,14 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
                                     return;
                                 }
                                 
-                                [self.player playTrackProvider:(id <SPTTrackProvider>)object callback:nil];
-                                
+                                // [self.player playTrackProvider:(id <SPTTrackProvider>)object callback:nil];
+                                [self.player playTrackProvider:(id <SPTTrackProvider>)object  callback:^(NSError *error) {
+                                    self.player.shuffle = YES;
+                                    self.player.repeat = YES;
+                                    [self.player setIsPlaying:YES callback:nil];
+                                }];
                             }];
-		}];
+    }];
 }
 
 #pragma mark - Track Player Delegates
@@ -610,5 +630,17 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
 - (void) audioStreaming:(SPTAudioStreamingController *)audioStreaming didChangeToTrack:(NSDictionary *)trackMetadata {
     [self updateUI];
 }
+- (IBAction)resetLocation:(id)sender {
+    
+    
+    
+    locationFetchCounter = 0;
 
+    self.weatherCond.text= @"Searching";
+    
+    // fetching current location start from here
+    [locationManager startUpdatingLocation];
+    
+    
+}
 @end

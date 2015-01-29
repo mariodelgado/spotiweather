@@ -65,9 +65,26 @@ int locationFetchCounter;
     double delayInSeconds = 0.1;
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-        // If you open a URL during application:didFinishLaunchingWithOptions:, you
-        // seem to get into a weird state.
-        [[UIApplication sharedApplication] openURL:loginURL];
+        
+        
+        CGRect webFrame = CGRectMake(0.0, 0.0, 320.0, 480);
+        UIWebView *webView = [[UIWebView alloc] initWithFrame:webFrame];
+        [webView setBackgroundColor:[UIColor greenColor]];
+        //NSString *urlAddress = loginURL;
+        NSURL *url = loginURL;
+        NSURLRequest *requestObj = [NSURLRequest requestWithURL:url];
+        [webView loadRequest:requestObj];
+        
+        UIViewController *viewController1 = [[UIViewController alloc] init];
+        viewController1.view = webView;
+        
+        
+        
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController1];
+        viewController1.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc ] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(done:)];
+        viewController1.title = @"Login to Spotify";
+        
+        [self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
     });
 }
 
@@ -118,20 +135,31 @@ int locationFetchCounter;
     return YES;
 }
 
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+-(void)done:(id)sender{
+    
+    [self.window.rootViewController dismissViewControllerAnimated: TRUE completion:nil];
+}
 
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    
     SPTAuthCallback authCallback = ^(NSError *error, SPTSession *session) {
         // This is the callback that'll be triggered when auth is completed (or fails).
-
+        
         if (error != nil) {
             NSLog(@"*** Auth error: %@", error);
             return;
         }
-
+        
         NSData *sessionData = [NSKeyedArchiver archivedDataWithRootObject:session];
         [[NSUserDefaults standardUserDefaults] setObject:sessionData
                                                   forKey:@kSessionUserDefaultsKey];
         [self enableAudioPlaybackWithSession:session];
+        [self.window.rootViewController dismissViewControllerAnimated: TRUE completion:nil];
+        
+        [self renewTokenAndEnablePlayback];
+        
+        
+        
     };
     
     /*

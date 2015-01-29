@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>C6D49CB9-2482-4F31-B082-93DD2811ECAF</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Simple Track Playback</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>DCF35C8425E3FA519150A3CE6806B7BF6BF05564</key>
+		<string>https://github.com/mariodelgado/spotiweather.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Simple Track Playback.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>DCF35C8425E3FA519150A3CE6806B7BF6BF05564</key>
+		<string>..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/mariodelgado/spotiweather.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>DCF35C8425E3FA519150A3CE6806B7BF6BF05564</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>DCF35C8425E3FA519150A3CE6806B7BF6BF05564</string>
+			<key>IDESourceControlWCCName</key>
+			<string>spotiweather</string>
+		</dict>
+	</array>
+</dict>
+</plist>
