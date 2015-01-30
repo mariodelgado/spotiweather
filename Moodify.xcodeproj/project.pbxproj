@@ -20,6 +20,8 @@
 		37E2C9EA18B4DF7D00D5D823 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 37E2C9E918B4DF7D00D5D823 /* ViewController.m */; };
 		37E2C9EC18B4DF7D00D5D823 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 37E2C9EB18B4DF7D00D5D823 /* Images.xcassets */; };
 		92F98B0F678053C8F3656C8E /* libPods-Simple Track Playback.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB9BF773ADCF62FF98DF9B64 /* libPods-Simple Track Playback.a */; };
+		FE3F2C371A7A2C2C003CB4D7 /* Spotify.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE3F2C361A7A2C2C003CB4D7 /* Spotify.framework */; };
+		FE7EB82E1A7B5A7F0034EC17 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE7EB82D1A7B5A7F0034EC17 /* MediaPlayer.framework */; };
 		FE94FF9E1A6394E20018CB39 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE94FF9D1A6394E20018CB39 /* CoreLocation.framework */; };
 /* End PBXBuildFile section */
 
@@ -45,6 +47,8 @@
 		C7909AA98813B8EA410519F9 /* Pods-Simple Track Playback.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Simple Track Playback.release.xcconfig"; path = "Pods/Target Support Files/Pods-Simple Track Playback/Pods-Simple Track Playback.release.xcconfig"; sourceTree = "<group>"; };
 		CECF6ACB1A1B7EFB000A29BD /* Config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
 		EB9BF773ADCF62FF98DF9B64 /* libPods-Simple Track Playback.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Simple Track Playback.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FE3F2C361A7A2C2C003CB4D7 /* Spotify.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Spotify.framework; sourceTree = "<group>"; };
+		FE7EB82D1A7B5A7F0034EC17 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		FE94FF9D1A6394E20018CB39 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -53,7 +57,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FE7EB82E1A7B5A7F0034EC17 /* MediaPlayer.framework in Frameworks */,
 				FE94FF9E1A6394E20018CB39 /* CoreLocation.framework in Frameworks */,
+				FE3F2C371A7A2C2C003CB4D7 /* Spotify.framework in Frameworks */,
 				378297E718BCDF4700EFF728 /* AVFoundation.framework in Frameworks */,
 				377A23B918BDFE2300EC584A /* Spotify.framework in Frameworks */,
 				378297E518BCDF4000EFF728 /* Security.framework in Frameworks */,
@@ -88,6 +94,8 @@
 		37E2C9CF18B4DF7D00D5D823 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FE7EB82D1A7B5A7F0034EC17 /* MediaPlayer.framework */,
+				FE3F2C361A7A2C2C003CB4D7 /* Spotify.framework */,
 				FE94FF9D1A6394E20018CB39 /* CoreLocation.framework */,
 				377A23B818BDFE2300EC584A /* Spotify.framework */,
 				378297E618BCDF4700EFF728 /* AVFoundation.framework */,
@@ -344,7 +352,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				FRAMEWORK_SEARCH_PATHS = ../..;
+				FRAMEWORK_SEARCH_PATHS = (
+					../..,
+					"$(PROJECT_DIR)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Simple Track Playback/Moodify-Prefix.pch";
 				INFOPLIST_FILE = "Simple Track Playback/Moodify-Info.plist";
@@ -365,7 +376,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				FRAMEWORK_SEARCH_PATHS = ../..;
+				FRAMEWORK_SEARCH_PATHS = (
+					../..,
+					"$(PROJECT_DIR)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Simple Track Playback/Moodify-Prefix.pch";
 				INFOPLIST_FILE = "Simple Track Playback/Moodify-Info.plist";

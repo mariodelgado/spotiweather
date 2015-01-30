@@ -22,6 +22,10 @@
 #import "KFOWMSearchResponseModel.h"
 #import "KFOWMSystemModel.h"
 #import <Spotify/Spotify.h>
+#import <MediaPlayer/MPMoviePlayerController.h>
+#import <MediaPlayer/MPNowPlayingInfoCenter.h>
+#import <MediaPlayer/MPMediaItem.h>
+#import <AVFoundation/AVFoundation.h>
 
 
 CLLocationManager *locationManager;
@@ -68,9 +72,67 @@ int locationFetchCounter;
 
 @implementation ViewController
 
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    // Turn on remote control event delivery
+    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    
+    // Set itself as the first responder
+    [self becomeFirstResponder];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    
+    // Turn off remote control event delivery
+    [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
+    
+    // Resign as first responder
+    [self resignFirstResponder];
+    
+    [super viewWillDisappear:animated];
+}
+
+- (void)remoteControlReceivedWithEvent:(UIEvent *)receivedEvent {
+    
+    if (receivedEvent.type == UIEventTypeRemoteControl) {
+        
+        switch (receivedEvent.subtype) {
+                
+            case UIEventSubtypeRemoteControlTogglePlayPause:
+                [self playPause: nil];
+                break;
+                
+            case UIEventSubtypeRemoteControlPreviousTrack:
+                [self rewind: nil];
+                break;
+                
+            case UIEventSubtypeRemoteControlNextTrack:
+                [self fastForward: nil];
+                break;
+                
+            default:
+                break;
+        }
+    }
+}
+
+
+
 -(void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.titleLabel.layer.opacity = 0;
+    self.artistLabel.layer.opacity = 0;
+    self.coverView.layer.opacity = 0;
+    self.coverViewBG.layer.opacity = 0;
 
+
+
+    
+    
+    
     locationManager = [[CLLocationManager alloc] init];
     [locationManager requestWhenInUseAuthorization];
     locationManager.delegate = self;
@@ -271,6 +333,8 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
                  NSLog(@"It's %@", upper1);
 
                  
+        
+                 
                  if ([self.weatherCond.text isEqualToString:@"CLOUDS"]) {
                      NSLog(@"It's Cloudy");
                      
@@ -291,9 +355,31 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
                                              }];
                                              
                                          }];
+                     
+                     
+                     [UIView animateWithDuration:.4 delay:.8 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+                         self.titleLabel.layer.opacity = 1;
+                         self.artistLabel.layer.opacity = 1;
+                         self.coverView.layer.opacity = 1;
+                         self.coverViewBG.layer.opacity = 1;
+                     } completion:^(BOOL finished) {
+                         nil;
+                     }];
 
                     
                  }else{
+                     
+                     
+                     [UIView animateWithDuration:.4 delay:.8 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+                         self.titleLabel.layer.opacity = 1;
+                         self.artistLabel.layer.opacity = 1;
+                         self.coverView.layer.opacity = 1;
+                         self.coverViewBG.layer.opacity = 1;
+                     } completion:^(BOOL finished) {
+                         nil;
+                     }];
+                     
+                     
                      NSLog(@"It's Nice out");
 
                      [SPTRequest requestItemAtURI:[NSURL URLWithString:@"spotify:user:spotify:playlist:0i0KOEPUK7pA1A5A29ulk4"]
@@ -403,8 +489,7 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
         }];
         
         
-        self.playPause.selected = !self.playPause.selected;
-        [self.player setIsPlaying:!self.player.isPlaying callback:nil];
+
         
         if (self.playPause.selected == YES) {
             [UIView animateWithDuration:3.0
@@ -494,8 +579,26 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
 
         self.albumLabel.text = [self.player.currentTrackMetadata valueForKey:SPTAudioStreamingMetadataAlbumName];
        // self.artistLabel.text = [self.player.currentTrackMetadata valueForKey:SPTAudioStreamingMetadataArtistName];
+        
+        Class playingInfoCenter = NSClassFromString(@"MPNowPlayingInfoCenter");
+        
+        if (playingInfoCenter) {
+            MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
+            NSDictionary *songInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                                      uppercaseString, MPMediaItemPropertyArtist,
+                                      uppercaseString1, MPMediaItemPropertyTitle,
+                                      @"Some Album", MPMediaItemPropertyAlbumTitle,
+                                      nil];
+            center.nowPlayingInfo = songInfo;
+            
+        }
+
     }
     [self updateCoverArt];
+    
+
+    
+    
 }
 
 -(void)updateCoverArt {
@@ -632,11 +735,20 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
 }
 - (IBAction)resetLocation:(id)sender {
     
-    
+    [UIView animateWithDuration:.4 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        self.titleLabel.layer.opacity = 0;
+        self.artistLabel.layer.opacity = 0;
+        self.coverView.layer.opacity = 0;
+        self.coverViewBG.layer.opacity = 0;
+    } completion:^(BOOL finished) {
+        nil;
+    }];
     
     locationFetchCounter = 0;
 
     self.weatherCond.text= @"Searching";
+    self.Location.text= @"Acquiring Location";
+
     
     // fetching current location start from here
     [locationManager startUpdatingLocation];

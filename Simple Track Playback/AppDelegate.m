@@ -69,7 +69,7 @@ int locationFetchCounter;
         
         CGRect webFrame = CGRectMake(0.0, 0.0, 320.0, 480);
         UIWebView *webView = [[UIWebView alloc] initWithFrame:webFrame];
-        [webView setBackgroundColor:[UIColor greenColor]];
+        [webView setBackgroundColor:[UIColor whiteColor]];
         //NSString *urlAddress = loginURL;
         NSURL *url = loginURL;
         NSURLRequest *requestObj = [NSURLRequest requestWithURL:url];
@@ -77,9 +77,6 @@ int locationFetchCounter;
         
         UIViewController *viewController1 = [[UIViewController alloc] init];
         viewController1.view = webView;
-        
-        
-        
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController1];
         viewController1.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc ] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(done:)];
         viewController1.title = @"Login to Spotify";
@@ -149,15 +146,16 @@ int locationFetchCounter;
             NSLog(@"*** Auth error: %@", error);
             return;
         }
+           [self.window.rootViewController dismissViewControllerAnimated: TRUE completion:nil];
         
         NSData *sessionData = [NSKeyedArchiver archivedDataWithRootObject:session];
         [[NSUserDefaults standardUserDefaults] setObject:sessionData
                                                   forKey:@kSessionUserDefaultsKey];
         [self enableAudioPlaybackWithSession:session];
+        
         [self.window.rootViewController dismissViewControllerAnimated: TRUE completion:nil];
         
-        [self renewTokenAndEnablePlayback];
-        
+
         
         
     };
