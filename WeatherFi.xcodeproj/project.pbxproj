@@ -29,14 +29,14 @@
 		377A23B818BDFE2300EC584A /* Spotify.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Spotify.framework; path = ../../Spotify.framework; sourceTree = "<group>"; };
 		378297E418BCDF4000EFF728 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		378297E618BCDF4700EFF728 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		37E2C9CD18B4DF7D00D5D823 /* Moodify.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Moodify.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		37E2C9CD18B4DF7D00D5D823 /* WeatherFi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WeatherFi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		37E2C9D018B4DF7D00D5D823 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		37E2C9D218B4DF7D00D5D823 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		37E2C9D418B4DF7D00D5D823 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		37E2C9D818B4DF7D00D5D823 /* Moodify-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Moodify-Info.plist"; sourceTree = "<group>"; };
+		37E2C9D818B4DF7D00D5D823 /* WeatherFi-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "WeatherFi-Info.plist"; sourceTree = "<group>"; };
 		37E2C9DA18B4DF7D00D5D823 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		37E2C9DC18B4DF7D00D5D823 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		37E2C9DE18B4DF7D00D5D823 /* Moodify-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Moodify-Prefix.pch"; sourceTree = "<group>"; };
+		37E2C9DE18B4DF7D00D5D823 /* WeatherFi-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WeatherFi-Prefix.pch"; sourceTree = "<group>"; };
 		37E2C9DF18B4DF7D00D5D823 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		37E2C9E018B4DF7D00D5D823 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		37E2C9E318B4DF7D00D5D823 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
@@ -86,7 +86,7 @@
 		37E2C9CE18B4DF7D00D5D823 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				37E2C9CD18B4DF7D00D5D823 /* Moodify.app */,
+				37E2C9CD18B4DF7D00D5D823 /* WeatherFi.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -126,10 +126,10 @@
 		37E2C9D718B4DF7D00D5D823 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				37E2C9D818B4DF7D00D5D823 /* Moodify-Info.plist */,
+				37E2C9D818B4DF7D00D5D823 /* WeatherFi-Info.plist */,
 				37E2C9D918B4DF7D00D5D823 /* InfoPlist.strings */,
 				37E2C9DC18B4DF7D00D5D823 /* main.m */,
-				37E2C9DE18B4DF7D00D5D823 /* Moodify-Prefix.pch */,
+				37E2C9DE18B4DF7D00D5D823 /* WeatherFi-Prefix.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -146,9 +146,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		37E2C9CC18B4DF7D00D5D823 /* Moodify */ = {
+		37E2C9CC18B4DF7D00D5D823 /* WeatherFi */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 37E2CA0218B4DF7D00D5D823 /* Build configuration list for PBXNativeTarget "Moodify" */;
+			buildConfigurationList = 37E2CA0218B4DF7D00D5D823 /* Build configuration list for PBXNativeTarget "WeatherFi" */;
 			buildPhases = (
 				4B87653A4087A9796C97879B /* Check Pods Manifest.lock */,
 				37E2C9C918B4DF7D00D5D823 /* Sources */,
@@ -160,9 +160,9 @@
 			);
 			dependencies = (
 			);
-			name = Moodify;
+			name = WeatherFi;
 			productName = "Empty iOS SDK Project";
-			productReference = 37E2C9CD18B4DF7D00D5D823 /* Moodify.app */;
+			productReference = 37E2C9CD18B4DF7D00D5D823 /* WeatherFi.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -174,7 +174,7 @@
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = "Your Company";
 			};
-			buildConfigurationList = 37E2C9C818B4DF7D00D5D823 /* Build configuration list for PBXProject "Moodify" */;
+			buildConfigurationList = 37E2C9C818B4DF7D00D5D823 /* Build configuration list for PBXProject "WeatherFi" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -187,7 +187,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				37E2C9CC18B4DF7D00D5D823 /* Moodify */,
+				37E2C9CC18B4DF7D00D5D823 /* WeatherFi */,
 			);
 		};
 /* End PBXProject section */
@@ -357,14 +357,14 @@
 					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Simple Track Playback/Moodify-Prefix.pch";
-				INFOPLIST_FILE = "Simple Track Playback/Moodify-Info.plist";
+				GCC_PREFIX_HEADER = "Simple Track Playback/WeatherFi-Prefix.pch";
+				INFOPLIST_FILE = "Simple Track Playback/WeatherFi-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"$(OTHER_LDFLAGS)",
 				);
-				PRODUCT_NAME = Moodify;
+				PRODUCT_NAME = WeatherFi;
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
@@ -381,14 +381,14 @@
 					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Simple Track Playback/Moodify-Prefix.pch";
-				INFOPLIST_FILE = "Simple Track Playback/Moodify-Info.plist";
+				GCC_PREFIX_HEADER = "Simple Track Playback/WeatherFi-Prefix.pch";
+				INFOPLIST_FILE = "Simple Track Playback/WeatherFi-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"$(OTHER_LDFLAGS)",
 				);
-				PRODUCT_NAME = Moodify;
+				PRODUCT_NAME = WeatherFi;
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
@@ -397,7 +397,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		37E2C9C818B4DF7D00D5D823 /* Build configuration list for PBXProject "Moodify" */ = {
+		37E2C9C818B4DF7D00D5D823 /* Build configuration list for PBXProject "WeatherFi" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				37E2CA0018B4DF7D00D5D823 /* Debug */,
@@ -406,7 +406,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		37E2CA0218B4DF7D00D5D823 /* Build configuration list for PBXNativeTarget "Moodify" */ = {
+		37E2CA0218B4DF7D00D5D823 /* Build configuration list for PBXNativeTarget "WeatherFi" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				37E2CA0318B4DF7D00D5D823 /* Debug */,

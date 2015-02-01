@@ -31,6 +31,7 @@
 CLLocationManager *locationManager;
 CLGeocoder *geocoder;
 int locationFetchCounter;
+int refreshcounter;
 
 @interface ViewController () <SPTAudioStreamingDelegate, CLLocationManagerDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
@@ -49,6 +50,10 @@ int locationFetchCounter;
 @property (weak, nonatomic) IBOutlet UIView *startBG;
 @property (weak, nonatomic) IBOutlet UIImageView *oval1;
 @property (weak, nonatomic) IBOutlet UIImageView *oval2;
+@property (weak, nonatomic) IBOutlet UIButton *settingsbutton;
+@property (weak, nonatomic) IBOutlet UILabel *info1;
+@property (weak, nonatomic) IBOutlet UILabel *info2;
+@property (weak, nonatomic) IBOutlet UILabel *info3;
 
 @property (nonatomic, strong) SPTSession *session;
 @property (nonatomic, strong) SPTAudioStreamingController *player;
@@ -61,6 +66,9 @@ int locationFetchCounter;
 @property NSDictionary *result;
 
 @property (nonatomic, strong) KFOpenWeatherMapAPIClient *apiClient;
+
+@property NSString *uppercaseString;
+@property NSString *uppercaseString1;
 
 
 
@@ -131,13 +139,17 @@ int locationFetchCounter;
     self.titleLabel.layer.opacity = 0;
     self.artistLabel.layer.opacity = 0;
     self.coverView.layer.opacity = 0;
+    self.info1.alpha =0;
+    self.info2.alpha =0;
+    self.info3.alpha =0;
     
 
     [self startupscreen];
 
     
     
-    
+    refreshcounter = 0;
+
 
     
     self.pauseview.bounds = self.coverView.bounds;
@@ -195,21 +207,31 @@ int locationFetchCounter;
 
 -(void)startupscreen{
     
+    [UIView animateWithDuration:0.5 delay:0 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        self.info1.alpha =0;
+        self.info2.alpha =0;
+        self.info3.alpha =0;
+    } completion:^(BOOL finished) {
+        nil;
+    }];
+
     
-    
-  [UIView animateWithDuration:3.0 delay:0.3 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+  [UIView animateWithDuration:5.0 delay:0.3 usingSpringWithDamping:0.7 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
       self.oval2.transform = CGAffineTransformMakeRotation(2000);
-      self.oval1.transform = CGAffineTransformMakeRotation(5000);
+      self.oval1.transform = CGAffineTransformMakeRotation(290);
   } completion:nil];
-    [UIView animateWithDuration:1.3 delay:0.5 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    [UIView animateWithDuration:1.3 delay:1.0 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.oval2.transform = CGAffineTransformMakeScale(10, 10);
     } completion:nil];
-    [UIView animateWithDuration:1.3 delay:0.6 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    [UIView animateWithDuration:0.9 delay:1.3 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut  animations:^{
         self.oval1.transform = CGAffineTransformMakeScale(10, 10);
     } completion:nil];
-    [UIView animateWithDuration:0.5 delay:0.9 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    [UIView animateWithDuration:0.5 delay:1.7 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.startBG.alpha =0;
-    } completion:nil];
+    } completion:^(BOOL finished) {
+        self.coverView.layer.opacity = 1;
+
+    }];
     
     
     
@@ -226,6 +248,40 @@ int locationFetchCounter;
     [locationManager startUpdatingLocation];
     
     
+    
+}
+
+-(void)startupscreenunwind{
+    self.settingsbutton.enabled = YES;
+
+    
+    [UIView animateWithDuration:0.5 delay:0 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        self.info1.alpha =0;
+        self.info2.alpha =0;
+        self.info3.alpha =0;
+    } completion:^(BOOL finished) {
+        nil;
+    }];
+    
+    
+
+    [UIView animateWithDuration:1.3 delay:0.0 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionBeginFromCurrentState animations:^{
+        self.oval2.transform = CGAffineTransformMakeScale(10, 10);
+    } completion:nil];
+    [UIView animateWithDuration:0.9 delay:0.2 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut  animations:^{
+        self.oval1.transform = CGAffineTransformMakeScale(10, 10);
+    } completion:nil];
+    [UIView animateWithDuration:0.5 delay:0.6 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        self.startBG.alpha =0;
+        self.coverView.layer.opacity = 1;
+
+    } completion:^(BOOL finished) {
+        nil;
+    }];
+    
+    
+    
+
     
 }
 
@@ -424,7 +480,7 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
                                                  self.player.repeat = YES;
                                                  [self.player setIsPlaying:YES callback:nil];
                                              }];
-                                             
+
                                          }];
 
 
@@ -438,7 +494,11 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
 
              }
          }];
-
+        if (self.coverView == nil){
+            [self performSelector:@selector(updateUI) withObject:nil afterDelay:10];}
+        else{
+        [self performSelector:@selector(updateUI) withObject:nil afterDelay:1];
+        }
     }];
 }
 
@@ -500,10 +560,18 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
 }
 
 -(IBAction)playPause:(id)sender {
+    
+    if (self.info1.alpha == 1){
+        [self startupscreenunwind];
+    } else{
+        [self.player setIsPlaying:!self.player.isPlaying callback:nil];
+        self.playPause.selected = !self.playPause.selected;
+
     if (self.coverView.image == nil) {
         self.coverView.backgroundColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:.3];
         self.pauseview.layer.opacity = 0;
-        
+        NSLog(@"play/pause");
+
         [[[UIApplication sharedApplication] delegate] performSelector:@selector(openLoginPage)];
     }
     else{
@@ -516,27 +584,28 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
             nil;
         }];
         
-        
-
-        
         if (self.playPause.selected == YES) {
             [UIView animateWithDuration:3.0
                                   delay:0 options:UIViewKeyframeAnimationOptionAutoreverse | UIViewKeyframeAnimationOptionRepeat |UIViewAnimationOptionCurveEaseInOut animations:^{
-                                      self.pauseview.layer.opacity = 0.3;
-                                      
+                                      self.pauseview.layer.opacity = 0.4;
+                                      NSLog(@"play/pause");
+
+
                                   } completion:^(BOOL finished) {
                                       nil;
                                   }];
         }else{
             [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
                 self.pauseview.layer.opacity = 0;
-                
+                NSLog(@"play/pause");
+
             } completion:^(BOOL finished) {
                 nil;
             }];
             
-            
+
         }
+    }
     }
 }
 
@@ -555,7 +624,7 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
             self.coverViewBG.layer.opacity = 1;
             
         } completion:^(BOOL finished) {
-            nil;
+            [self updateCoverArt];
         }];
         
 
@@ -568,7 +637,7 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
             self.pauseview.layer.opacity = 0;
             
         } completion:^(BOOL finished) {
-            nil;
+            [self updateCoverArt];
         }];
         
         
@@ -593,36 +662,28 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
         self.albumLabel.text = @"";
         self.artistLabel.text = @"";
     } else {
+        
 
         NSString *strDay = [self.player.currentTrackMetadata valueForKey:SPTAudioStreamingMetadataTrackName];
-        NSString *uppercaseString = [strDay uppercaseString];
+        self.uppercaseString = [strDay uppercaseString];
         self.titleLabel.text =
-        uppercaseString;
+        self.uppercaseString;
 
         
         NSString *strDay1 = [self.player.currentTrackMetadata valueForKey:SPTAudioStreamingMetadataArtistName];
-        NSString *uppercaseString1 = [strDay1 uppercaseString];
+        self.uppercaseString1 = [strDay1 uppercaseString];
         self.artistLabel.text =
-        uppercaseString1;
+        self.uppercaseString1;
 
         self.albumLabel.text = [self.player.currentTrackMetadata valueForKey:SPTAudioStreamingMetadataAlbumName];
        // self.artistLabel.text = [self.player.currentTrackMetadata valueForKey:SPTAudioStreamingMetadataArtistName];
         
-        Class playingInfoCenter = NSClassFromString(@"MPNowPlayingInfoCenter");
         
-        if (playingInfoCenter) {
-            MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
-            NSDictionary *songInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                                      uppercaseString, MPMediaItemPropertyArtist,
-                                      uppercaseString1, MPMediaItemPropertyTitle,
-                                      @"Some Album", MPMediaItemPropertyAlbumTitle,
-                                      nil];
-            center.nowPlayingInfo = songInfo;
-            
-        }
-
     }
-    [self updateCoverArt];
+    
+ 
+
+    
     
 
     
@@ -675,7 +736,24 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
                 }];
 
                
+                Class playingInfoCenter = NSClassFromString(@"MPNowPlayingInfoCenter");
                 
+                
+                MPMediaItemArtwork *albumArt = [[MPMediaItemArtwork alloc]
+                                                initWithImage:self.coverView.image];
+                
+                if (playingInfoCenter) {
+                    MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
+                    NSDictionary *songInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                                              self.uppercaseString, MPMediaItemPropertyArtist,
+                                              self.uppercaseString1, MPMediaItemPropertyTitle,
+                                              @"Some Album", MPMediaItemPropertyAlbumTitle,
+                                              albumArt, MPMediaItemPropertyArtwork,
+                                              nil];
+                    center.nowPlayingInfo = songInfo;
+                    
+                }
+
   
 
                 
@@ -686,6 +764,10 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
             });
         });
     }];
+    
+
+        
+    [self updateUI];
 }
 
 
@@ -760,6 +842,8 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
 
 - (void) audioStreaming:(SPTAudioStreamingController *)audioStreaming didChangeToTrack:(NSDictionary *)trackMetadata {
     [self updateUI];
+    [self updateCoverArt];
+
 }
 - (IBAction)resetLocation:(id)sender {
     
@@ -780,7 +864,45 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
     
     // fetching current location start from here
     [locationManager startUpdatingLocation];
+    [self updateCoverArt];
+
     
+    
+}
+- (IBAction)settingstoggle:(id)sender {
+    self.settingsbutton.enabled = NO;
+    
+    [UIView animateWithDuration:0.4 delay:0 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        self.oval2.transform = CGAffineTransformMakeRotation(-2000);
+        self.oval1.transform = CGAffineTransformMakeRotation(-290);
+        self.startBG.alpha =1;
+        self.coverView.alpha = 0;
+
+    } completion:^(BOOL finished) {
+        [UIView animateWithDuration:0.5 delay:0.2 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            self.oval2.transform = CGAffineTransformMakeScale(1, 1);
+            self.oval1.transform = CGAffineTransformMakeScale(1, 1);
+
+        } completion:^(BOOL finished) {
+            [UIView animateWithDuration:0.5 delay:0.2 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+                self.info1.alpha =1;
+                self.info2.alpha =1;
+                self.info3.alpha =1;
+                
+                
+            } completion:^(BOOL finished) {
+                [UIView animateWithDuration:1.5 delay:0.9 options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionAutoreverse |UIViewAnimationOptionRepeat animations:^{
+                    self.oval2.transform = CGAffineTransformMakeScale(1.04, 1.04);
+
+                    
+                    
+                } completion:^(BOOL finished) {
+                    nil;
+                }];
+            }];
+        }];
+    }];
+
     
 }
 @end

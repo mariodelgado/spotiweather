@@ -16,8 +16,8 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "37E2C9CC18B4DF7D00D5D823"
                BuildableName = "Moodify.app"
-               BlueprintName = "Moodify"
-               ReferencedContainer = "container:Moodify.xcodeproj">
+               BlueprintName = "WeatherFi"
+               ReferencedContainer = "container:WeatherFi.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -34,8 +34,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "37E2C9CC18B4DF7D00D5D823"
             BuildableName = "Moodify.app"
-            BlueprintName = "Moodify"
-            ReferencedContainer = "container:Moodify.xcodeproj">
+            BlueprintName = "WeatherFi"
+            ReferencedContainer = "container:WeatherFi.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -53,8 +53,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "37E2C9CC18B4DF7D00D5D823"
             BuildableName = "Moodify.app"
-            BlueprintName = "Moodify"
-            ReferencedContainer = "container:Moodify.xcodeproj">
+            BlueprintName = "WeatherFi"
+            ReferencedContainer = "container:WeatherFi.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -71,8 +71,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "37E2C9CC18B4DF7D00D5D823"
             BuildableName = "Moodify.app"
-            BlueprintName = "Moodify"
-            ReferencedContainer = "container:Moodify.xcodeproj">
+            BlueprintName = "WeatherFi"
+            ReferencedContainer = "container:WeatherFi.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
