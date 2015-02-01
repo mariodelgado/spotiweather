@@ -45,6 +45,10 @@ int locationFetchCounter;
 @property (weak, nonatomic) IBOutlet UILabel *Location;
 @property (weak, nonatomic) IBOutlet UIView *pauseview;
 @property (weak, nonatomic) IBOutlet UIView *coverSuperView;
+@property (weak, nonatomic) IBOutlet UIVisualEffectView *mainblur;
+@property (weak, nonatomic) IBOutlet UIView *startBG;
+@property (weak, nonatomic) IBOutlet UIImageView *oval1;
+@property (weak, nonatomic) IBOutlet UIImageView *oval2;
 
 @property (nonatomic, strong) SPTSession *session;
 @property (nonatomic, strong) SPTAudioStreamingController *player;
@@ -75,6 +79,7 @@ int locationFetchCounter;
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    
     
     // Turn on remote control event delivery
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
@@ -126,25 +131,14 @@ int locationFetchCounter;
     self.titleLabel.layer.opacity = 0;
     self.artistLabel.layer.opacity = 0;
     self.coverView.layer.opacity = 0;
-    self.coverViewBG.layer.opacity = 0;
+    
 
+    [self startupscreen];
 
+    
+    
+    
 
-    
-    
-    
-    locationManager = [[CLLocationManager alloc] init];
-    [locationManager requestWhenInUseAuthorization];
-    locationManager.delegate = self;
-    locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    geocoder = [[CLGeocoder alloc] init];
-    
-    locationFetchCounter = 0;
-               [self blurimage];
-    
-    // fetching current location start from here
-    [locationManager startUpdatingLocation];
-    
     
     self.pauseview.bounds = self.coverView.bounds;
     
@@ -199,7 +193,41 @@ int locationFetchCounter;
     return UIStatusBarStyleLightContent;
 }
 
-
+-(void)startupscreen{
+    
+    
+    
+  [UIView animateWithDuration:3.0 delay:0.3 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+      self.oval2.transform = CGAffineTransformMakeRotation(2000);
+      self.oval1.transform = CGAffineTransformMakeRotation(5000);
+  } completion:nil];
+    [UIView animateWithDuration:1.3 delay:0.5 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        self.oval2.transform = CGAffineTransformMakeScale(10, 10);
+    } completion:nil];
+    [UIView animateWithDuration:1.3 delay:0.6 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        self.oval1.transform = CGAffineTransformMakeScale(10, 10);
+    } completion:nil];
+    [UIView animateWithDuration:0.5 delay:0.9 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        self.startBG.alpha =0;
+    } completion:nil];
+    
+    
+    
+    locationManager = [[CLLocationManager alloc] init];
+    [locationManager requestWhenInUseAuthorization];
+    locationManager.delegate = self;
+    locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    geocoder = [[CLGeocoder alloc] init];
+    
+    locationFetchCounter = 0;
+    [self blurimage];
+    
+    // fetching current location start from here
+    [locationManager startUpdatingLocation];
+    
+    
+    
+}
 
 
 - (void)onCustomPan:(UIPanGestureRecognizer *)panGestureRecognizer {

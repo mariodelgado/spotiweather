@@ -13,20 +13,20 @@
 // For an in-depth auth demo, see the "Basic Auth" demo project supplied with the SDK.
 // Don't forget to add your callback URL's prefix to the URL Types section in the target's Info pane!
 
-#define kClientId "85b185ca13574b9c9471b1156987b336"
-#define kCallbackURL "spotifyiossdkexample://"
+#define kClientId "900efab5f1d34b3caac3d9f8d0c7d504"
+#define kCallbackURL "weatherfi://"
 
-#define kTokenSwapServiceURL "https://whispering-beyond-6523.herokuapp.com/swap"
+#define kTokenSwapServiceURL "https://aqueous-refuge-8979.herokuapp.com/swap"
 // or "http://localhost:1234/swap" with example token swap service
 
-// If you don't provide a token swap service url the login will use implicit grant tokens, which https://peaceful-sierra-1249.herokuapp.com/swap
+// If you don't provide a token swap service url the login will use implicit grant tokens, which
 
 // means that your user will need to sign in again every time the token expires.
 
-#define kTokenRefreshServiceURL "https://whispering-beyond-6523.herokuapp.com/refresh"
+#define kTokenRefreshServiceURL "https://aqueous-refuge-8979.herokuapp.com/refresh"
 // or "http://localhost:1234/refresh" with example token refresh service
 
-// If you don't provide a token refresh service url, the user will need to sign in again every https://peaceful-sierra-1249.herokuapp.com/refresh
+// If you don't provide a token refresh service url, the user will need to sign in again every 
 // time their token expires.
 
 
