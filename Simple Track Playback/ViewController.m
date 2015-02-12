@@ -40,6 +40,7 @@ int refreshcounter;
 @property (weak, nonatomic) IBOutlet UIImageView *coverView;
 @property (weak, nonatomic) IBOutlet UIImageView *coverViewBG;
 @property (weak, nonatomic) IBOutlet UIButton *playPause;
+@property (weak, nonatomic) IBOutlet UIView *daynightcolor;
 
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *spinner;
 @property (weak, nonatomic) IBOutlet UILabel *weatherCond;
@@ -58,6 +59,10 @@ int refreshcounter;
 @property (nonatomic, strong) SPTSession *session;
 @property (nonatomic, strong) SPTAudioStreamingController *player;
 @property (nonatomic, weak) NSString *condi;
+@property (nonatomic, weak) NSDate *sunrise;
+@property (nonatomic, weak) NSDate *sunset;
+@property (nonatomic, weak) NSDate *time;
+@property BOOL daytime;
 
 
 @property (nonatomic, readwrite) CLLocationCoordinate2D mycord;
@@ -113,8 +118,11 @@ int refreshcounter;
         
         switch (receivedEvent.subtype) {
                 
-            case UIEventSubtypeRemoteControlTogglePlayPause:
-                [self playPause: nil];
+            case UIEventSubtypeRemoteControlPlay:
+                [self playPause:nil];
+                break;
+            case UIEventSubtypeRemoteControlPause:
+                [self playPause:nil];
                 break;
                 
             case UIEventSubtypeRemoteControlPreviousTrack:
@@ -197,15 +205,74 @@ int refreshcounter;
 //    
 //    
     [self setNeedsStatusBarAppearanceUpdate];
+    
+    [AVAudioSession sharedInstance];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioRouteChangeListenerCallback:)
+                                                 name:AVAudioSessionRouteChangeNotification
+                                               object:nil];
 
 }
 
+- (void)audioRouteChangeListenerCallback:(NSNotification*)notification
+{
+    NSDictionary *interuptionDict = notification.userInfo;
+    
+    NSInteger routeChangeReason = [[interuptionDict valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
+    
+    switch (routeChangeReason) {
+            
+        case AVAudioSessionRouteChangeReasonNewDeviceAvailable:
+            NSLog(@"AVAudioSessionRouteChangeReasonNewDeviceAvailable");
+            NSLog(@"Headphone/Line plugged in");
+            break;
+            
+        case AVAudioSessionRouteChangeReasonOldDeviceUnavailable:
+            NSLog(@"AVAudioSessionRouteChangeReasonOldDeviceUnavailable");
+            NSLog(@"Headphone/Line was pulled. Stopping player....");
+            [self playPause:nil];
+            break;
+            
+        case AVAudioSessionRouteChangeReasonCategoryChange:
+            // called at start - also when other audio wants to play
+            NSLog(@"AVAudioSessionRouteChangeReasonCategoryChange");
+            break;
+    }
+}
 
 -(UIStatusBarStyle)preferredStatusBarStyle{
     return UIStatusBarStyleLightContent;
 }
 
+
+- (BOOL)isHeadsetPluggedIn {
+    AVAudioSessionRouteDescription* route = [[AVAudioSession sharedInstance] currentRoute];
+    for (AVAudioSessionPortDescription* desc in [route outputs]) {
+        if ([[desc portType] isEqualToString:AVAudioSessionPortHeadphones])
+            return YES;
+    }
+    return NO;
+    [self playPause:nil];
+}
+
+
+-(void)paused{
+  
+        [UIView animateWithDuration:3.0
+                              delay:0 options:UIViewKeyframeAnimationOptionAutoreverse | UIViewKeyframeAnimationOptionRepeat |UIViewAnimationOptionCurveEaseInOut animations:^{
+                                  self.pauseview.layer.opacity = 0.4;
+                                  NSLog(@"play/pause");
+                                  
+                                  
+                              } completion:^(BOOL finished) {
+                                  nil;
+                              }];
+
+}
+
+
 -(void)startupscreen{
+    
+
     
     [UIView animateWithDuration:0.5 delay:0 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.info1.alpha =0;
@@ -221,10 +288,10 @@ int refreshcounter;
       self.oval1.transform = CGAffineTransformMakeRotation(290);
   } completion:nil];
     [UIView animateWithDuration:1.3 delay:1.0 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        self.oval2.transform = CGAffineTransformMakeScale(10, 10);
+        self.oval2.transform = CGAffineTransformMakeScale(11, 11);
     } completion:nil];
     [UIView animateWithDuration:0.9 delay:1.3 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut  animations:^{
-        self.oval1.transform = CGAffineTransformMakeScale(10, 10);
+        self.oval1.transform = CGAffineTransformMakeScale(11, 11);
     } completion:nil];
     [UIView animateWithDuration:0.5 delay:1.7 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.startBG.alpha =0;
@@ -266,10 +333,10 @@ int refreshcounter;
     
 
     [UIView animateWithDuration:1.3 delay:0.0 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionBeginFromCurrentState animations:^{
-        self.oval2.transform = CGAffineTransformMakeScale(10, 10);
+        self.oval2.transform = CGAffineTransformMakeScale(11, 11);
     } completion:nil];
     [UIView animateWithDuration:0.9 delay:0.2 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut  animations:^{
-        self.oval1.transform = CGAffineTransformMakeScale(10, 10);
+        self.oval1.transform = CGAffineTransformMakeScale(11, 11);
     } completion:nil];
     [UIView animateWithDuration:0.5 delay:0.6 usingSpringWithDamping:1 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.startBG.alpha =0;
@@ -402,109 +469,327 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
                  NSLog(@"received weather: %@, conditions: %@", responseModel.cityName, [responseModel valueForKeyPath:@"weather.main"][0]);
                  
 
+                 self.sunrise =  responseModel.systemInfo.sunrise;
+                 NSLog(@"received weather: %@, sunrise: %@, current time: %@", responseModel.cityName, responseModel.systemInfo.sunrise, responseModel.dt);
+                 self.sunset =  responseModel.systemInfo.sunset;
+                 self.time = responseModel.dt;
                  
-
+                 
                  
                  NSString *loc2 = [NSString stringWithFormat:@"%@", [responseModel valueForKeyPath:@"weather.main"][0]];
                  NSString *upper2 = [loc2 uppercaseString];
                  
-                self.weatherCond.text= upper2;
-                 
+                 self.weatherCond.text= upper2;
+                 NSLog(@"It's %@", upper2);
                  
                  NSString *loc1 = [NSString stringWithFormat:@"%@", responseModel.cityName];
                  NSString *upper1 = [loc1 uppercaseString];
                  self.Location.text = upper1;
                  NSLog(@"It's %@", upper1);
-
+                
+                 //time logic
                  
-        
+                 if ([self.time compare:self.sunset] == NSOrderedAscending && [self.time compare:self.sunrise] == NSOrderedAscending) {
+                     NSLog(@"after sunset");
+                     
+                     self.coverViewBG.alpha = 1;
+                     self.daytime = FALSE;
+                    }
                  
-                 if ([self.weatherCond.text isEqualToString:@"CLOUDS"]) {
-                     NSLog(@"It's Cloudy");
-                     
-                     
-                     [SPTRequest requestItemAtURI:[NSURL URLWithString:@"spotify:user:1276694298:playlist:7kKvk0X4SRYBP5J87tfXG4"]
-                                      withSession:self.session
-                                         callback:^(NSError *error, id object) {
-                                             
-                                             if (error != nil) {
-                                                 NSLog(@"*** Album lookup got error %@", error);
-                                                 return;
-                                             }
-                                             
-                                             [self.player playTrackProvider:(id <SPTTrackProvider>)object  callback:^(NSError *error) {
-                                                 self.player.shuffle = YES;
-                                                 self.player.repeat = YES;
-                                                 [self.player setIsPlaying:YES callback:nil];
-                                             }];
-                                             
-                                         }];
-                     
-                     
-                     [UIView animateWithDuration:.4 delay:.8 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-                         self.titleLabel.layer.opacity = 1;
-                         self.artistLabel.layer.opacity = 1;
-                         self.coverView.layer.opacity = 1;
-                         self.coverViewBG.layer.opacity = 1;
-                     } completion:^(BOOL finished) {
-                         nil;
-                     }];
+               else {
+                     NSLog(@"daytime");
+                     self.daytime = TRUE;
+                   self.coverViewBG.alpha = 0.49;
 
-                    
-                 }else{
-                     
-                     
-                     [UIView animateWithDuration:.4 delay:.8 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-                         self.titleLabel.layer.opacity = 1;
-                         self.artistLabel.layer.opacity = 1;
-                         self.coverView.layer.opacity = 1;
-                         self.coverViewBG.layer.opacity = 1;
-                     } completion:^(BOOL finished) {
-                         nil;
-                     }];
-                     
-                     
-                     NSLog(@"It's Nice out");
-
-                     [SPTRequest requestItemAtURI:[NSURL URLWithString:@"spotify:user:spotify:playlist:0i0KOEPUK7pA1A5A29ulk4"]
-                                      withSession:self.session
-                                         callback:^(NSError *error, id object) {
-                                             
-                                             if (error != nil) {
-                                                 NSLog(@"*** Album lookup got error %@", error);
-                                                 return;
-                                             }
-                                             
-                                             [self.player playTrackProvider:(id <SPTTrackProvider>)object  callback:^(NSError *error) {
-                                                 self.player.shuffle = YES;
-                                                 self.player.repeat = YES;
-                                                 [self.player setIsPlaying:YES callback:nil];
-                                             }];
-
-                                         }];
-
-
-                 
                  }
-             }
-             else
-             {
-                 NSLog(@"could not get weather: %@", error);
                  
+                 
+                 if ([self.weatherCond.text isEqualToString:@"CLOUDS" ]) {
+                    
+                     if (self.daytime == FALSE) {
+                     NSLog(@"It's Cloudy at night");
+                     
+                     
+                     [SPTRequest requestItemAtURI:[NSURL URLWithString:@"spotify:user:1221012421:playlist:1guPAwh8uTeg7rBTFkjUaP"]
+                                      withSession:self.session
+                                         callback:^(NSError *error, id object) {
+                                             
+                                             if (error != nil) {
+                                                 NSLog(@"*** Album lookup got error %@", error);
+                                                 return;
+                                             }
+                                             
+                                             [self.player playTrackProvider:(id <SPTTrackProvider>)object  callback:^(NSError *error) {
+                                                 self.player.shuffle = YES;
+                                                 self.player.repeat = YES;
+                                                 [self.player setIsPlaying:NO callback:nil];
+                                             }];
+                                             
+                                         }];
+                     
+                     
+                     [UIView animateWithDuration:.4 delay:.8 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+                         self.titleLabel.layer.opacity = 1;
+                         self.artistLabel.layer.opacity = 1;
+                         self.coverView.layer.opacity = 1;
+                         self.coverViewBG.layer.opacity = 1;
+                     } completion:^(BOOL finished) {
+                         nil;
+                     }];
+                         
+                     }
+                     else{
+                         
+                          NSLog(@"It's Cloudy during the day");
+                         [SPTRequest requestItemAtURI:[NSURL URLWithString:@"spotify:user:1276694298:playlist:7kKvk0X4SRYBP5J87tfXG4"]
+                                          withSession:self.session
+                                             callback:^(NSError *error, id object) {
+                                                 
+                                                 if (error != nil) {
+                                                     NSLog(@"*** Album lookup got error %@", error);
+                                                     return;
+                                                 }
+                                                 
+                                                 [self.player playTrackProvider:(id <SPTTrackProvider>)object  callback:^(NSError *error) {
+                                                     self.player.shuffle = YES;
+                                                     self.player.repeat = YES;
+                                                     [self.player setIsPlaying:NO callback:nil];
+                                                 }];
+                                                 
+                                             }];
+                         
+                         
+                         [UIView animateWithDuration:.4 delay:.8 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+                             self.titleLabel.layer.opacity = 1;
+                             self.artistLabel.layer.opacity = 1;
+                             self.coverView.layer.opacity = 1;
+                             self.coverViewBG.layer.opacity = 1;
+                         } completion:^(BOOL finished) {
+                             nil;
+                         }];
+                         
+                     
+                     
+                     }
+                     }
+                 //end cloudy
+                 
+                 else if ([self.weatherCond.text isEqualToString:@"CLEAR"]){
+                     if (self.daytime == FALSE) {
+                         
+                         [UIView animateWithDuration:.4 delay:.8 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+                             self.titleLabel.layer.opacity = 1;
+                             self.artistLabel.layer.opacity = 1;
+                             self.coverView.layer.opacity = 1;
+                             self.coverViewBG.layer.opacity = 1;
+                         } completion:^(BOOL finished) {
+                             nil;
+                         }];
+                         
+                         NSLog(@"It's Nice out at night");
+                         
+                         [SPTRequest requestItemAtURI:[NSURL URLWithString:@"spotify:user:spotify:playlist:2uaste7TLMJ9RjMh0Gw8mz"]
+                                          withSession:self.session
+                                             callback:^(NSError *error, id object) {
+                                                 
+                                                 if (error != nil) {
+                                                     NSLog(@"*** Album lookup got error %@", error);
+                                                     return;
+                                                 }
+                                                 
+                                                 [self.player playTrackProvider:(id <SPTTrackProvider>)object  callback:^(NSError *error) {
+                                                     self.player.shuffle = YES;
+                                                     self.player.repeat = YES;
+                                                     [self.player setIsPlaying:NO callback:nil];
+                                                 }];
+                                                 
+                                             }];
+                         
+                     }
+                     else{
+                         
+                         
+                         [UIView animateWithDuration:.4 delay:.8 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+                             self.titleLabel.layer.opacity = 1;
+                             self.artistLabel.layer.opacity = 1;
+                             self.coverView.layer.opacity = 1;
+                             self.coverViewBG.layer.opacity = 1;
+                         } completion:^(BOOL finished) {
+                             nil;
+                         }];
+                         
+                         NSLog(@"It's Nice out in the daytime");
+                         
+                         [SPTRequest requestItemAtURI:[NSURL URLWithString:@"spotify:user:spotify:playlist:0i0KOEPUK7pA1A5A29ulk4"]
+                                          withSession:self.session
+                                             callback:^(NSError *error, id object) {
+                                                 
+                                                 if (error != nil) {
+                                                     NSLog(@"*** Album lookup got error %@", error);
+                                                     return;
+                                                 }
+                                                 
+                                                 [self.player playTrackProvider:(id <SPTTrackProvider>)object  callback:^(NSError *error) {
+                                                     self.player.shuffle = YES;
+                                                     self.player.repeat = YES;
+                                                     [self.player setIsPlaying:NO callback:nil];
+                                                 }];
+                                                 
+                                             }];
+                     }
+                 }
+                 //end clear
+                 
+                 else if ([self.weatherCond.text isEqualToString:@"SNOW"]){
+                     if (self.daytime == FALSE) {
+                         [UIView animateWithDuration:.4 delay:.8 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+                             self.titleLabel.layer.opacity = 1;
+                             self.artistLabel.layer.opacity = 1;
+                             self.coverView.layer.opacity = 1;
+                             self.coverViewBG.layer.opacity = 1;
+                         } completion:^(BOOL finished) {
+                             nil;
+                         }];
+                         
+                         NSLog(@"It's Snowing out");
+                         
+                         [SPTRequest requestItemAtURI:[NSURL URLWithString:@"spotify:user:spotify:playlist:6mseK8nPoieXybr36KNsYh"]
+                                          withSession:self.session
+                                             callback:^(NSError *error, id object) {
+                                                 
+                                                 if (error != nil) {
+                                                     NSLog(@"*** Album lookup got error %@", error);
+                                                     return;
+                                                 }
+                                                 
+                                                 [self.player playTrackProvider:(id <SPTTrackProvider>)object  callback:^(NSError *error) {
+                                                     self.player.shuffle = YES;
+                                                     self.player.repeat = YES;
+                                                     [self.player setIsPlaying:NO callback:nil];
+                                                 }];
+                                                 
+                                             }];
+                         
+                     }
+                     else{
+                         
+                         [UIView animateWithDuration:.4 delay:.8 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+                             self.titleLabel.layer.opacity = 1;
+                             self.artistLabel.layer.opacity = 1;
+                             self.coverView.layer.opacity = 1;
+                             self.coverViewBG.layer.opacity = 1;
+                         } completion:^(BOOL finished) {
+                             nil;
+                         }];
+                         
+                         NSLog(@"It's Snowing out");
+                         
+                         [SPTRequest requestItemAtURI:[NSURL URLWithString:@"spotify:user:spotify:playlist:4WCmHOBqKS7pac4s1lW2ZY"]
+                                          withSession:self.session
+                                             callback:^(NSError *error, id object) {
+                                                 
+                                                 if (error != nil) {
+                                                     NSLog(@"*** Album lookup got error %@", error);
+                                                     return;
+                                                 }
+                                                 
+                                                 [self.player playTrackProvider:(id <SPTTrackProvider>)object  callback:^(NSError *error) {
+                                                     self.player.shuffle = YES;
+                                                     self.player.repeat = YES;
+                                                     [self.player setIsPlaying:NO callback:nil];
+                                                 }];
+                                                 
+                                             }];
+                         
+                     }
+                     
+                     
+                 }
+                 
+                 //end snow
+                 
+                 else if ([self.weatherCond.text isEqualToString:@"RAIN"]){
+                     if (self.daytime == FALSE) {
+                         
+                         [UIView animateWithDuration:.4 delay:.8 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+                             self.titleLabel.layer.opacity = 1;
+                             self.artistLabel.layer.opacity = 1;
+                             self.coverView.layer.opacity = 1;
+                             self.coverViewBG.layer.opacity = 1;
+                         } completion:^(BOOL finished) {
+                             nil;
+                         }];
+                         
+                         NSLog(@"It's Raining out");
+                         
+                         [SPTRequest requestItemAtURI:[NSURL URLWithString:@"spotify:user:spotify:playlist:7MPXsjQGsXcLdNz7UxVuVl"]
+                                          withSession:self.session
+                                             callback:^(NSError *error, id object) {
+                                                 
+                                                 if (error != nil) {
+                                                     NSLog(@"*** Album lookup got error %@", error);
+                                                     return;
+                                                 }
+                                                 
+                                                 [self.player playTrackProvider:(id <SPTTrackProvider>)object  callback:^(NSError *error) {
+                                                     self.player.shuffle = YES;
+                                                     self.player.repeat = YES;
+                                                     [self.player setIsPlaying:NO callback:nil];
+                                                 }];
+                                                 
+                                             }];
+                         
+                     }
+                     else{
+                         
+                         
+                         [UIView animateWithDuration:.4 delay:.8 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+                             self.titleLabel.layer.opacity = 1;
+                             self.artistLabel.layer.opacity = 1;
+                             self.coverView.layer.opacity = 1;
+                             self.coverViewBG.layer.opacity = 1;
+                         } completion:^(BOOL finished) {
+                             nil;
+                         }];
+                         
+                         NSLog(@"It's Raining out");
+                         
+                         [SPTRequest requestItemAtURI:[NSURL URLWithString:@"spotify:user:spotify:playlist:7CQunpJEHecknIyABfS8pP"]
+                                          withSession:self.session
+                                             callback:^(NSError *error, id object) {
+                                                 
+                                                 if (error != nil) {
+                                                     NSLog(@"*** Album lookup got error %@", error);
+                                                     return;
+                                                 }
+                                                 
+                                                 [self.player playTrackProvider:(id <SPTTrackProvider>)object  callback:^(NSError *error) {
+                                                     self.player.shuffle = YES;
+                                                     self.player.repeat = YES;
+                                                     [self.player setIsPlaying:YES callback:nil];
+                                                 }];
+                                                 
+                                             }];
+                     }
+                     
+                     
+                 }
+                 
+                 //end rain
 
-             }
-         }];
-        if (self.coverView == nil){
-            [self performSelector:@selector(updateUI) withObject:nil afterDelay:10];}
-        else{
-        [self performSelector:@selector(updateUI) withObject:nil afterDelay:1];
-        }
+                 
+                 
+                 
+             }}];
+        
     }];
+    [self paused];
 }
+
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
     NSLog(@"failed to fetch current location : %@", error);
-    [SPTRequest requestItemAtURI:[NSURL URLWithString:@"spotify:user:spotify_france:playlist:3fo3sq7WExOXk1St5ajqya"]
+    [SPTRequest requestItemAtURI:[NSURL URLWithString:@""]
                      withSession:self.session
                         callback:^(NSError *error, id object) {
                             
@@ -584,7 +869,7 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
             nil;
         }];
         
-        if (self.playPause.selected == YES) {
+        if (self.player.isPlaying == YES) {
             [UIView animateWithDuration:3.0
                                   delay:0 options:UIViewKeyframeAnimationOptionAutoreverse | UIViewKeyframeAnimationOptionRepeat |UIViewAnimationOptionCurveEaseInOut animations:^{
                                       self.pauseview.layer.opacity = 0.4;
@@ -745,9 +1030,9 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
                 if (playingInfoCenter) {
                     MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
                     NSDictionary *songInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                                              self.uppercaseString, MPMediaItemPropertyArtist,
-                                              self.uppercaseString1, MPMediaItemPropertyTitle,
-                                              @"Some Album", MPMediaItemPropertyAlbumTitle,
+                                              self.uppercaseString1, MPMediaItemPropertyArtist,
+                                              self.uppercaseString, MPMediaItemPropertyTitle,
+                                              @"WeatherFi", MPMediaItemPropertyAlbumTitle,
                                               albumArt, MPMediaItemPropertyArtwork,
                                               nil];
                     center.nowPlayingInfo = songInfo;
@@ -858,13 +1143,13 @@ self.coverSuperView.transform = CGAffineTransformMakeScale(1, 1);
     
     locationFetchCounter = 0;
 
-    self.weatherCond.text= @"Searching";
-    self.Location.text= @"Acquiring Location";
+    self.weatherCond.text= @"Searching...";
+    self.Location.text= @"Tap to Reload";
 
     
     // fetching current location start from here
     [locationManager startUpdatingLocation];
-    [self updateCoverArt];
+    [self updateUI];
 
     
     
