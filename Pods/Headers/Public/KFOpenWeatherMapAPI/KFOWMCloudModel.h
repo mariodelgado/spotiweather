@@ -1,1 +1,0 @@
-../../../KFOpenWeatherMapAPI/KFOpenWeatherMapAPI/Source/Models/KFOWMCloudModel.h
